@@ -36,36 +36,6 @@
       font-size: 0.875rem;
       margin-top: 5px;
     }
-
-    .success-modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 20px;
-      background-color: #f0f8ff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-header {
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .modal-close {
-      margin-top: 15px;
-      padding: 8px 15px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -94,17 +64,10 @@
     <button type="button" onclick="formHandler.validateAndSubmit()">Submit</button>
   </form>
 
-  <div id="successModal" class="success-modal">
-    <div class="modal-header">Success</div>
-    <p>Your form has been submitted successfully!</p>
-    <button class="modal-close" onclick="formHandler.closeModal()">Close</button>
-  </div>
-
   <script>
     class FormHandler {
-      constructor(formId, modalId) {
+      constructor(formId) {
         this.form = document.getElementById(formId);
-        this.modal = document.getElementById(modalId);
         this.errorMessages = {};
       }
 
@@ -170,25 +133,17 @@
         localStorage.setItem('formData', JSON.stringify(formData));
       }
 
-      showModal() {
-        this.modal.style.display = 'flex';
-      }
-
-      closeModal() {
-        this.modal.style.display = 'none';
-      }
-
       validateAndSubmit() {
         const isValid = this.validateAllFields();
 
         if (isValid) {
           this.saveDataToLocalStorage();
-          this.showModal();
+          window.location.href = 'profile.html';
         }
       }
     }
 
-    const formHandler = new FormHandler('registrationForm', 'successModal');
+    const formHandler = new FormHandler('registrationForm');
   </script>
 </body>
 </html>

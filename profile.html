@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Profile</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .title {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+    }
+
+    .subtitle {
+      margin: 0 0 16px 0;
+      color: #4b5563;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .row:first-of-type {
+      border-top: 0;
+    }
+
+    .label {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .value {
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    a.button,
+    button.button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #111827;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    a.button.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="content"></div>
+  </div>
+
+  <script>
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function readProfile() {
+      const raw = localStorage.getItem('formData');
+      if (!raw) return null;
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function maskPassword(pw) {
+      const length = typeof pw === 'string' ? pw.length : 0;
+      if (length <= 0) return '';
+      return '•'.repeat(Math.min(length, 12));
+    }
+
+    const content = document.getElementById('content');
+    const profile = readProfile();
+
+    if (!profile) {
+      content.innerHTML = `
+        <div class="empty">
+          <h1 class="title">No profile found</h1>
+          <p class="subtitle">Please sign up first to create your profile.</p>
+          <div class="actions">
+            <a class="button primary" href="index.html">Go to signup</a>
+          </div>
+        </div>
+      `;
+    } else {
+      const name = escapeHtml(profile.name ?? '');
+      const email = escapeHtml(profile.email ?? '');
+      const phone = escapeHtml(profile.phone ?? '');
+      const password = escapeHtml(maskPassword(profile.password));
+
+      content.innerHTML = `
+        <div class="card">
+          <h1 class="title">Welcome, ${name || 'User'}</h1>
+          <p class="subtitle">Here’s what you submitted during signup.</p>
+
+          <div class="row">
+            <div class="label">Name</div>
+            <div class="value">${name || '—'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Email</div>
+            <div class="value">${email || '—'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Phone</div>
+            <div class="value">${phone || '—'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Password</div>
+            <div class="value">${password || '—'}</div>
+          </div>
+
+          <div class="actions">
+            <a class="button" href="index.html">Edit signup</a>
+            <button class="button" type="button" id="clearProfile">Clear saved profile</button>
+          </div>
+        </div>
+      `;
+
+      const clearBtn = document.getElementById('clearProfile');
+      clearBtn.addEventListener('click', () => {
+        localStorage.removeItem('formData');
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+</html>
